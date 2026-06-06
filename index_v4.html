@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Julius Bongole - Portfolio</title>
+    <link rel="stylesheet" href="style_v4.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&family=Sora:wght@400;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <span class="logo-icon">✨</span>
+                <span class="logo-text">Julius</span>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item"><a href="#home" class="nav-link active">Home</a></li>
+                <li class="nav-item"><a href="#about" class="nav-link">About</a></li>
+                <li class="nav-item"><a href="#services" class="nav-link">Services</a></li>
+                <li class="nav-item"><a href="#projects" class="nav-link">Projects</a></li>
+                <li class="nav-item"><a href="#upload" class="nav-link">Upload</a></li>
+                <li class="nav-item"><a href="#contact" class="nav-link">Contact</a></li>
+            </ul>
+            <div class="hamburger">
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+                <span class="hamburger-line"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content modal-login-content">
+            <button class="modal-close" onclick="closeAdminLoginModal()">✕</button>
+            <h2>Admin Access</h2>
+            <p style="color: #666; margin-bottom: 20px;">Enter admin password to upload projects</p>
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+                    <span class="error-message" id="adminPasswordError"></span>
+                </div>
+                <button type="submit" class="btn-submit" style="width: 100%;">
+                    <span class="btn-text">Access Upload</span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FILE UPLOAD MODAL -->
+    <div id="uploadModal" class="modal">
+        <div class="modal-content modal-upload-content">
+            <button class="modal-close" onclick="closeUploadModal()">✕</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2 style="margin: 0;">Upload Project Files</h2>
+                <button onclick="logoutAdmin()" class="btn-logout">Logout</button>
+            </div>
+            <form id="fileUploadForm" class="file-upload-form" novalidate>
+                <div class="form-group">
+                    <label for="projectName">Project Name</label>
+                    <input type="text" id="projectName" placeholder="Enter project name" required>
+                    <span class="error-message" id="projectNameError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectCategory">Project Category</label>
+                    <select id="projectCategory" required>
+                        <option value="">Select a category</option>
+                        <option value="Web Development">Web Development</option>
+                        <option value="Database System">Database System</option>
+                        <option value="Network Design">Network Design</option>
+                        <option value="Graphics Design">Graphics Design</option>
+                        <option value="Mobile App">Mobile App</option>
+                        <option value="System Admin">System Administration</option>
+                    </select>
+                    <span class="error-message" id="projectCategoryError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="projectDescription">Project Description</label>
+                    <textarea id="projectDescription" placeholder="Describe your project" rows="4" required></textarea>
+                    <span class="error-message" id="projectDescriptionError"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="fileInput">Upload Files</label>
+                    <div class="file-upload-area" id="fileUploadArea">
+                        <div class="file-upload-icon">📁</div>
+                        <p>Click to upload or drag and drop</p>
+                        <p class="file-types">Supported: Images, Documents, Videos, Code Files, Databases</p>
+                        <input type="file" id="fileInput" multiple hidden>
+                    </div>
+                    <span class="error-message" id="fileError"></span>
+                </div>
+
+                <div id="filePreviewContainer" class="file-preview-container"></div>
+
+                <button type="submit" class="btn-submit" id="uploadSubmitBtn">
+                    <span class="btn-text">Upload Project</span>
+                    <span class="spinner" id="uploadSpinner" style="display: none;"></span>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROJECT MODAL -->
+    <div id="projectModal" class="modal modal-project">
+        <div class="modal-content modal-project-content">
+            <button class="modal-close" onclick="closeProjectModal()">✕</button>
+            <div class="project-modal-body">
+                <div class="project-modal-image"></div>
+                <div class="project-modal-info">
+                    <div class="project-modal-tag"></div>
+                    <h2 id="projectModalTitle"></h2>
+                    <p id="projectModalDesc"></p>
+                    <div class="project-modal-details">
+                        <div class="detail-item">
+                            <h4>Objective</h4>
+                            <p id="projectModalObjective"></p>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Technologies</h4>
+                            <div id="projectModalTech" class="tech-list"></div>
+                        </div>
+                        <div class="detail-item">
+                            <h4>Files</h4>
+                            <div id="projectModalFiles" class="files-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div id="responseModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-icon" id="modalIcon">✓</div>
+            <h3 id="modalTitle">Success!</h3>
+            <p id="modalMessage">Your message has been saved successfully!</p>
+            <button onclick="closeModal()" class="modal-btn">Close</button>
+        </div>
+    </div>
+
+    <!-- HERO SECTION -->
+    <header class="hero-section" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <div class="profile-img-container fade-in">
+                    <img src="D:\version 1.1\files 1.5\Images\1780692266081.png" alt="Julius image" class="profil-img">
+                    <div class="profile-badge">IT Student</div>
+                </div>
+                <div class="hero-text">
+                    <h1 class="fade-in" style="animation-delay: 0.1s;">
+                        JULIUS <span class="gradient-text">BONGOLE</span>
+                    </h1>
+                    <p class="tagline fade-in" style="animation-delay: 0.2s;">
+                        Full-Stack Developer | Graphics Designer | Tech Innovator
+                    </p>
+                    <p class="hero-description fade-in" style="animation-delay: 0.3s;">
+                        Transforming ideas into digital reality with cutting-edge technology and creative design
+                    </p>
+                    <div class="hero-cta fade-in" style="animation-delay: 0.4s;">
+                        <button onclick="scrollToContact()" class="btn btn-primary">Get In Touch</button>
+                        <button onclick="scrollToProjects()" class="btn btn-secondary">View Work</button>
+                    </div>
+                </div>
+            </div>
+            <div class="floating-shapes">
+                <div class="shape shape-1"></div>
+                <div class="shape shape-2"></div>
+                <div class="shape shape-3"></div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section scroll-reveal" id="about">
+        <div class="container">
+            <div class="section-header">
+                <h2>About Me</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="about-content">
+                <div class="about-text fade-in-left">
+                    <p>I'm a passionate IT student at UCC Dar es Salaam with a deep love for technology and innovation. My journey in tech started with curiosity, and now it drives me to create meaningful digital solutions.</p>
+                    <p>With skills spanning from web development to graphic design, I thrive on building projects that solve real-world problems. I believe in continuous learning and staying updated with the latest technologies.</p>
+                    <div class="quick-stats">
+                        <div class="stat-card">
+                            <h3 id="projectCount">5+</h3>
+                            <p>Projects Completed</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>3+</h3>
+                            <p>Years Learning</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>100%</h3>
+                            <p>Dedication</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="about-skills fade-in-right">
+                    <h3>Technical Skills</h3>
+                    <div class="skill-list">
+                        <div class="skill-item">
+                            <span class="skill-name">Web Development</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 85%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Database Design</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Graphics Design</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 90%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Networking</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SERVICES SECTION -->
+    <section class="services-section scroll-reveal" id="services">
+        <div class="container">
+            <div class="section-header">
+                <h2>Services</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🌐</div>
+                    <h3>Web Development</h3>
+                    <p>Creating responsive, fast, and user-friendly websites using modern technologies and best practices.</p>
+                    <ul class="service-list">
+                        <li>✓ Frontend Development</li>
+                        <li>✓ Backend Development</li>
+                        <li>✓ Full-Stack Solutions</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🎨</div>
+                    <h3>UI/UX Design</h3>
+                    <p>Designing beautiful and intuitive user interfaces that enhance user experience and engagement.</p>
+                    <ul class="service-list">
+                        <li>✓ Wireframing</li>
+                        <li>✓ Prototyping</li>
+                        <li>✓ Visual Design</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🗄️</div>
+                    <h3>Database Development</h3>
+                    <p>Building efficient, secure, and scalable database systems for modern applications.</p>
+                    <ul class="service-list">
+                        <li>✓ Database Design</li>
+                        <li>✓ Query Optimization</li>
+                        <li>✓ Data Management</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">🔧</div>
+                    <h3>System Administration</h3>
+                    <p>Managing networks, servers, and IT infrastructure with focus on security and performance.</p>
+                    <ul class="service-list">
+                        <li>✓ Network Setup</li>
+                        <li>✓ System Maintenance</li>
+                        <li>✓ Security Implementation</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">💡</div>
+                    <h3>Consultation</h3>
+                    <p>Providing expert advice on technology solutions tailored to your business needs.</p>
+                    <ul class="service-list">
+                        <li>✓ Tech Strategy</li>
+                        <li>✓ Project Planning</li>
+                        <li>✓ Best Practices</li>
+                    </ul>
+                </div>
+
+                <div class="service-card">
+                    <div class="service-icon">📚</div>
+                    <h3>Technical Training</h3>
+                    <p>Teaching web development, programming, and design to aspiring tech enthusiasts.</p>
+                    <ul class="service-list">
+                        <li>✓ One-on-One Training</li>
+                        <li>✓ Group Workshops</li>
+                        <li>✓ Online Courses</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- UPLOAD SECTION -->
+    <section class="upload-section scroll-reveal" id="upload">
+        <div class="container">
+            <div class="section-header">
+                <h2>Project Portfolio</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="upload-intro">
+                <p>Showcasing all completed projects including images, documents, databases, network layouts, and more. All files are securely stored.</p>
+                <button id="uploadAdminBtn" onclick="openAdminLoginModal()" class="btn btn-primary btn-large">
+                    🔐 Admin: Upload New Project
+                </button>
+                <p id="adminStatusMsg" style="display: none; color: var(--success-color); margin-top: 10px; font-weight: 600;">
+                    ✅ Admin Mode Active - You can upload projects
+                </p>
+            </div>
+            <div id="uploadedProjectsList" class="uploaded-projects-list"></div>
+        </div>
+    </section>
+
+    <!-- PROJECTS SECTION -->
+    <section class="projects-section scroll-reveal" id="projects">
+        <div class="container">
+            <div class="section-header">
+                <h2>Featured Projects</h2>
+                <div class="section-line"></div>
+            </div>
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be loaded here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact-section scroll-reveal" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <h2>Get In Touch</h2>
+                <div class="section-line"></div>
+            </div>
+            <form id="contactForm" class="contact-form" novalidate>
+                <div class="form-group">
+                    <input 
+                        type="text" 
+                        id="name" 
+                        placeholder="Your Name" 
+                        required
+                        minlength="2"
+                    >
+                    <span class="error-message" id="nameError"></span>
+                </div>
+                <div class="form-group">
+                    <input 
+                        type="email" 
+                        id="email" 
+                        placeholder="Email" 
+                        required
+                        pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$"
+                    >
+                    <span class="error-message" id="emailError"></span>
+                </div>
+                <div class="form-group">
+                    <textarea 
+                        id="message" 
+                        rows="5" 
+                        placeholder="Description..." 
+                        required
+                        minlength="5"
+                    ></textarea>
+                    <span class="error-message" id="messageError"></span>
+                </div>
+                <button type="submit" class="btn-submit" id="submitBtn">
+                    <span class="btn-text">Send Message</span>
+                    <span class="spinner" id="spinner" style="display: none;"></span>
+                </button>
+            </form>
+            <div id="formMessages" class="form-messages"></div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>&copy; 2026 Julius Leonard Bongole. All rights reserved.</p>
+            <div class="social-links">
+                <a href="https://github.com/juliusbongole15-eng" class="social-link">GitHub</a>
+                <a href="#" class="social-link">LinkedIn</a>
+                <a href="https://instagram.com/digital_dream.studio" class="social-link">Instagram</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script_v4.js"></script>
+</body>
+</html>
